@@ -27,3 +27,6 @@ Thumbs.db
 
 # from sublime text editor
 package.sublime-workspace
+
+
+.bash/ignore

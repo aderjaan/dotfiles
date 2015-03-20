@@ -1,8 +1,10 @@
-export EDITOR=vim
+export EDITOR=nano
+export PATH=$PATH:$HOME/.cabal/bin
 # export EDITOR="$HOME/bin/mate -w"
 
 source ~/.bash/aliases
 source ~/.bash/paths
+source ~/.bash/ignore
 
 # Bashmarks is a simple set of bash functions that allows you to bookmark
 # folders in the command-line.
@@ -33,3 +35,7 @@ source ~/.bash/extras
 source ~/bin/z.sh
 
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+
+### Added by the Heroku Toolbelt
+export PATH="/usr/local/heroku/bin:$PATH"
+export PATH=$PATH:/usr/local/opt/go/libexec/bin

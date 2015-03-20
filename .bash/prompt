@@ -34,10 +34,12 @@ prompt_func() {
 
     if test $previous_return_value -eq 0
     then
-        PS1="${prompt}λ "
+        PS1="  ${prompt}λ "
     else
-        PS1="${prompt}\[${COLOR_LIGHT_RED}\]λ \[${COLOR_NC}\]"
+        PS1="  ${prompt}\[${COLOR_LIGHT_RED}\]λ \[${COLOR_NC}\]"
     fi
+    # PS1="\$(~/.rvm/bin/rvm-prompt) $PS1"
+    PS1="$PS1"
 }
 PROMPT_COMMAND=prompt_func
 

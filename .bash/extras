@@ -39,7 +39,7 @@ opensshconfig(){
 }
 
 openhostsfile(){
-  sudo $EDITOR /etc/hosts
+  sudo sublime /etc/hosts
 }
 
 nvv() {

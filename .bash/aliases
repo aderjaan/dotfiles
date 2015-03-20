@@ -3,30 +3,73 @@
 # install / update node.js
 function update-node {
   version=$1
-  curl https://raw.github.com/gist/3791075 | sh -s $version
+  curl https://gist.githubusercontent.com/madhums/3791075/raw/500068dc4da6ae6b7cc57c3d6c34593bb4ae9dd7/nodejs-install-update.sh | sh -s $version
 }
 
 # misc
 alias reload='. ~/.bash_profile'
+alias elias='sublime . ~/.bash/aliases'
 alias m="mate"
+alias sub="subl -w -a"
+alias ns="npm start"
+alias ni="npm install"
+alias nr="npm run-script "
+alias node="node --harmony"
+alias db="mongod"
+alias db2="mongod --port 27017 --dbpath /Users/aderjaan/Sites/data --replSet rs0"
+alias mgo="mongo"
+alias hm="heromongo"
+alias finders='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder /System/Library/CoreServices/Finder.app'
+alias finderh='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder /System/Library/CoreServices/Finder.app'
+eval "$(thefuck --alias kak)"
+alias dumpvm='cd /Applications/VMware\ Fusion.app/Contents/Library/VMware\ OVF\ Tool/ && ./ovftool /Volumes/Samsung_T1/VMware\ VMs/Windows\ 10\ x64.vmwarevm/Windows\ 10\ x64.vmx /Volumes/Samsung_T1/VMware\ VMs/dump.ova'
 
-# cd
+# cd etc
 alias ..='cd ..'
+alias rd='rm -rf '
 
 # git
+alias g="git "
+alias ga="git add "
+alias gs="git status"
+alias gd="git diff"
+alias gp="git push "
+alias gl="git log --pretty='format:%Cgreen%h%Creset %an - %s' --graph"
+alias gco="git checkout "
+alias gb="git branch"
+alias gba="git branch -a"
+alias gbl="git branch -l"
+alias gm="git merge --no-ff"
+alias gc="git commit -m"
+alias gca="git commit -am"
+alias gac="git commit -am"
 alias glg='git log --graph --pretty=format:"%Cred%h%Creset %C(yellow)%an%d%Creset %s %Cgreen(%cr)%Creset" --date=relative'
-alias gist='~/local/bin/gist.sh'
+alias grem="git remote -v"
+alias gamend="git add -A && git commit --amend --no-edit"
+
+# go
+alias goi="go install"
+alias gob="go build"
+alias goge="go get -t ./..."
+alias going="go get -t ./... && go install"
 
 # ubuntu
 alias tail='tail -f'
 alias ll='ls -alF'
 alias la='ls -A'
 
+alias hl='herolog'
+
 # creates a webserver in the current directory
 alias webserver="python -m SimpleHTTPServer"
 
 # mkdir and cd into it:
 mkcd () { mkdir -p "$@" && cd "$@"; }
+
+# touch and open in sublime
+touche() {
+  touch "$@" && atom "$@"
+}
 
 # I've given up on memorizing tar syntax, so:
 extract () {
@@ -47,4 +90,271 @@ extract () {
     else
         echo "'$1' is not a valid file"
     fi
+}
+
+# other
+anybody() {
+    nmap -sP 192.168.$1
+}
+
+function sites {
+    cd /Users/aderjaan/Sites
+}
+
+function cgo {
+    cd /Users/aderjaan/Sites/go/src/github.com/changer
+}
+
+function cgb {
+    cd /Users/aderjaan/Sites/go/src/github.com/bulletind
+}
+
+function ca {
+    cd /Users/aderjaan/Sites/safetyapps/sc-api
+}
+
+function cr {
+    cd /Users/aderjaan/Sites/safetyapps/sc-router
+}
+
+function cpu {
+    cd /Users/aderjaan/Sites/safetyapps/sc-plugins
+}
+
+function car {
+    cd /Users/aderjaan/Sites/node/carpetjs
+}
+
+function cc {
+    cd /Users/aderjaan/Sites/safetyapps/sc-client
+}
+
+function cc1 {
+    cd /Users/aderjaan/Sites/safetyapps/safetyapps-client
+}
+
+function userds {
+  ca && heromongo run sc-api-production scripts/export_users_with_permissions.js
+}
+
+function deployccprod {
+  gulp release:actionapp:nope && gulp release:adminapp:nope && gulp release:inspectionapp:nope && gulp release:landingapp:nope && gulp release:observationapp:nope && gulp release:reportingapp:nope && gulp release:supervisorapp:nope &&
+  gulp publish:production:actionapp && gulp publish:production:adminapp && gulp publish:production:inspectionapp && gulp publish:production:landingapp && gulp publish:production:observationapp && gulp publish:production:reportingapp && gulp publish:production:supervisorapp
+}
+
+# git functions
+function up {
+  git pull --rebase upstream develop
+}
+
+function updev {
+  gcod &&
+  up &&
+  git push origin develop --no-verify
+}
+
+function upstaging {
+  git checkout staging &&
+  git pull --rebase upstream staging &&
+  git push origin staging --no-verify
+}
+
+function upmaster {
+  git checkout master &&
+  git pull --rebase upstream master &&
+  git push origin master --no-verify
+}
+
+function gcod {
+  git checkout develop
+}
+
+function gcof {
+  git checkout feature/$1
+}
+
+function gcofn {
+  git checkout -b feature/$1
+}
+
+function gpof {
+  git push origin feature/$1 -f --no-verify
+}
+
+function gdel {
+  git branch -d $1
+  git push origin :$1
+}
+
+function delf {
+  git branch -d feature/$1
+  git push origin :feature/$1
+}
+
+function greset {
+  git reset --hard HEAD@{$1}
+}
+
+function undo {
+  git reset --soft HEAD~1
+}
+
+function gitsync {
+  git checkout $1
+  git reset --hard upstream/$1
+  git pull upstream $1
+}
+
+function docsapp {
+  git add docs/api/$1/*
+  git checkout docs/api/*
+}
+
+function herolog() {
+  app=$1
+  type=$2
+  if [ "$2" == "" ] ; then
+    type='api'
+  elif [ "$2" == "w" ] ; then
+    type='workers'
+  fi
+
+  if [ "$1" == "develop" ] ; then
+    app="sc-$type-testing"
+  elif [ "$1" == "staging" ] ; then
+    app="sc-$type-staging"
+  elif [ "$1" == "master" ] ; then
+    app="sc-$type-production"
+  fi
+
+  echo "heroku log $app"
+  heroku logs -a "$app" -t
+}
+
+function goenv {
+  if [ "$1" == "moire" ] ; then
+    server='moire'
+  elif [ "$1" == "battery" ] ; then
+    server='battery-group'
+  else
+    echo "not a valid servergroup"
+    return
+  fi
+
+  if [ "$2" == "develop" ] ; then
+    ext='testing'
+  elif [ "$2" == "staging" ] ; then
+    ext='staging'
+  elif [ "$2" == "master" ] ; then
+    ext='production'
+  else
+    echo "not a valid branch"
+    return
+  fi
+
+  echo "connecting to $server-$ext"
+  ssh "$server-$ext"
+}
+
+function batteryFile {
+  server='battery-group'
+
+  if [ "$1" == "develop" ] ; then
+    ext='testing'
+  elif [ "$1" == "staging" ] ; then
+    ext='staging'
+  elif [ "$1" == "master" ] ; then
+    ext='production'
+  else
+    echo "not a valid branch"
+    return
+  fi
+
+  timestamp=$(date +%Y%m%d)
+  if [ "$3" != "" ]; then
+    timestamp = $3
+  fi
+  scp "ubuntu@$server-$ext:/tmp/Downloads/$timestamp/media.safetychanger.com/assets/$2" /Users/aderjaan/Downloads
+}
+
+function deployapi {
+  if [ "$1" == "develop" ] ; then
+    suffix='-testing'
+  elif [ "$1" == "staging" ] ; then
+    suffix='-staging'
+  elif [ "$1" == "master" ] ; then
+    suffix=''
+  else
+    echo "not a valid branch"
+    return
+  fi
+
+  echo "sync local branch with upstream $1"
+  git checkout $1
+  git reset --hard upstream/$1
+  git pull upstream $1
+
+  timestamp=$(date +%Y-%m-%d_%H-%M-%S)
+  mongourl=`heroku config:get MONGODB_URL --app safetyapps-api$suffix`
+  if [[ $mongourl =~ mongodb://(.*):(.*)@(.*)/(.*)\?replicaSet=(.*) ]] ; then
+    echo "dump db ${BASH_REMATCH[4]} to ~/Sites/dump/${BASH_REMATCH[4]}/$timestamp"
+    mkdir -p ~/Sites/dump/${BASH_REMATCH[4]}/$timestamp
+    echo "mongodump -h ${BASH_REMATCH[5]}/${BASH_REMATCH[3]} -d ${BASH_REMATCH[4]} -u ${BASH_REMATCH[1]} -p${BASH_REMATCH[2]} -o ~/Sites/dump/${BASH_REMATCH[4]}"
+    eval "mongodump -h ${BASH_REMATCH[5]}/${BASH_REMATCH[3]} -d ${BASH_REMATCH[4]} -u ${BASH_REMATCH[1]} -p${BASH_REMATCH[2]} -o ~/Sites/dump/${BASH_REMATCH[4]}"
+  fi
+
+  echo "turn off worker dyno safetyapps-workers$suffix"
+  heroku ps:stop worker --app=safetyapps-workers$suffix
+  echo "push heroku worker safetyapps-workers$suffix"
+  git push git@heroku.com:safetyapps-workers$suffix.git $1:master -f --no-verify
+  echo "push heroku api safetyapps-api$suffix"
+  git push git@heroku.com:safetyapps-api$suffix.git $1:master -f --no-verify
+  echo "run migration on safetyapps-api$suffix"
+  heroku run 'npm run-script prestart' --app safetyapps-api$suffix
+  echo "turn on worker dyno safetyapps-workers$suffix"
+  heroku ps:restart worker --app=safetyapps-workers$suffix
+}
+
+function apilocal() {
+  tenant=$2
+  token=$3
+  run=$4
+  workers=$5
+
+  if [ "$3" == "" ] || [ "$3" == "run" ]; then
+    tenant="changer"
+    token=$2
+    run=$3
+    workers=$4
+  fi
+
+  cd ~/Sites/safetyapps/sc-api
+  if [ "$run" != "run" ] ; then
+    ./shell/dump.sh $1 $tenant
+  fi
+  ./shell/run.sh $1 $tenant $token $workers
+}
+
+tag() {
+  echo "npm version $1"
+  eval "npm version $1"
+
+  branch=`git rev-parse --symbolic-full-name --abbrev-ref HEAD`
+  if [ $branch != "master" ]
+  then
+    echo "Not on master branch, you are on $branch"
+    return 0
+  fi
+
+  version=`node -pe 'JSON.parse(process.argv[1]).version' "$(cat package.json)"`
+  git fetch
+  if GIT_DIR=.git git show-ref --tags | egrep -q "refs/tags/$version$"
+  then
+    echo "Found tag $version"
+  else
+    echo "Tag $version not found, creating..."
+    git tag $version
+    git push upstream $version --no-verify
+    echo "Tag $version created & pushed to repo"
+  fi
 }
