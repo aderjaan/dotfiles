@@ -42,4 +42,4 @@ if [ ! -d ~/bin ]; then
 	chmod u+x z.sh
 fi
 
-source ~/.bash_profile
+source ~/Sites/dotfiles/.bash_profile

@@ -10,7 +10,7 @@ export PATH=$PATH:/usr/local/share/npm/bin
 
 export REDIS_DATA_DIR=/data/redis
 
-export GOROOT=/usr/local/Cellar/go/1.9.2/libexec/
+export GOROOT=/usr/local/Cellar/go/1.10.2/libexec/
 export PATH=$PATH:$GOROOT/bin
 export GOPATH=$HOME/Sites/go
 export PATH=$PATH:$GOPATH/bin

@@ -16,13 +16,14 @@ alias ni="npm install"
 alias nr="npm run-script "
 alias node="node --harmony"
 alias db="mongod"
-alias db2="mongod --port 27017 --dbpath /Users/aderjaan/Sites/data --replSet rs0"
+alias db2="mongod --port 27017 --dbpath /data --replSet rs0"
 alias mgo="mongo"
 alias hm="heromongo"
 alias finders='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder /System/Library/CoreServices/Finder.app'
 alias finderh='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder /System/Library/CoreServices/Finder.app'
 eval "$(thefuck --alias kak)"
 alias dumpvm='cd /Applications/VMware\ Fusion.app/Contents/Library/VMware\ OVF\ Tool/ && ./ovftool /Volumes/Samsung_T1/VMware\ VMs/Windows\ 10\ x64.vmwarevm/Windows\ 10\ x64.vmx /Volumes/Samsung_T1/VMware\ VMs/dump.ova'
+alias removevm='sudo ~/Sites/dotfiles/uninstall_vmware.sh'
 
 # cd etc
 alias ..='cd ..'
@@ -98,43 +99,51 @@ anybody() {
 }
 
 function sites {
-    cd /Users/aderjaan/Sites
+    cd ~/Sites
 }
 
 function cgo {
-    cd /Users/aderjaan/Sites/go/src/github.com/changer
+    cd ~/Sites/go/src/github.com/changer
 }
 
 function cgb {
-    cd /Users/aderjaan/Sites/go/src/github.com/bulletind
+    cd ~/Sites/go/src/github.com/bulletind
 }
 
 function ca {
-    cd /Users/aderjaan/Sites/safetyapps/sc-api
+    cd ~/Sites/safetyapps/sc-api
 }
 
 function cr {
-    cd /Users/aderjaan/Sites/safetyapps/sc-router
+    cd ~/Sites/safetyapps/sc-router
 }
 
 function cpu {
-    cd /Users/aderjaan/Sites/safetyapps/sc-plugins
+    cd ~/Sites/safetyapps/sc-plugins
 }
 
 function car {
-    cd /Users/aderjaan/Sites/node/carpetjs
+    cd ~/Sites/node/carpetjs
 }
 
 function cc {
-    cd /Users/aderjaan/Sites/safetyapps/sc-client
-}
-
-function cc1 {
-    cd /Users/aderjaan/Sites/safetyapps/safetyapps-client
+    cd ~/Sites/safetyapps/sc-client
 }
 
 function userds {
   ca && heromongo run sc-api-production scripts/export_users_with_permissions.js
+}
+
+function linker {
+  linkfrom="$1$2"
+  linkto="$1$3"
+
+  echo "$linkfrom"
+  echo "$linkto"
+  cd "$linkfrom"
+  npm link
+  cd "$linkto"
+  npm link "$linkfrom"
 }
 
 function deployccprod {
@@ -142,7 +151,41 @@ function deployccprod {
   gulp publish:production:actionapp && gulp publish:production:adminapp && gulp publish:production:inspectionapp && gulp publish:production:landingapp && gulp publish:production:observationapp && gulp publish:production:reportingapp && gulp publish:production:supervisorapp
 }
 
+function bumpcc {
+  cd ~/Sites/safetyapps/sc-client
+  version=$1
+  if [ "$1" == "" ] ; then
+    version="major"
+  fi
+  gulp bump-all --version "$version"
+}
+
+function tagcc {
+  cd ~/Sites/safetyapps/sc-client
+  git add -A && gc "bump client to $1" && git tag $1 && git push upstream $1 && git push upstream develop && git push upstream develop:master
+}
+
+function routercc {
+  cd ~/Sites/safetyapps/sc-router
+  up
+  git add -A && gc "bump client to $1" && git push upstream develop
+}
+
 # git functions
+function glone {
+  repo=$2
+  org=$1
+  if [ "$2" == "" ] ; then
+    org='changer'
+    repo=$1
+  fi
+  git clone "git@github.com:$org/$repo.git"
+  cd "$repo"
+  git remote remove origin
+  git remote add upstream "git@github.com:$org/$repo.git"
+  git remote add origin "git@github.com:aderjaan/$repo.git"
+}
+
 function up {
   git pull --rebase upstream develop
 }
@@ -274,7 +317,12 @@ function batteryFile {
   if [ "$3" != "" ]; then
     timestamp = $3
   fi
-  scp "ubuntu@$server-$ext:/tmp/Downloads/$timestamp/media.safetychanger.com/assets/$2" /Users/aderjaan/Downloads
+  scp "ubuntu@$server-$ext:/tmp/Downloads/$timestamp/media.safetychanger.com/assets/$2" ~/Downloads
+}
+
+# server and filename
+function scpFile {
+  scp "$1:$2" ~/Downloads
 }
 
 function deployapi {
@@ -320,6 +368,11 @@ function apilocal() {
   token=$3
   run=$4
   workers=$5
+  db="safetyapps_testing"
+
+  if [ "$1" == "master" ]; then
+    db="safetyapps_production"
+  fi
 
   if [ "$3" == "" ] || [ "$3" == "run" ]; then
     tenant="changer"
@@ -331,7 +384,9 @@ function apilocal() {
   cd ~/Sites/safetyapps/sc-api
   if [ "$run" != "run" ] ; then
     ./shell/dump.sh $1 $tenant
+    mongo $db < ~/Sites/safetyapps/sc-plugins/local.js
   fi
+
   ./shell/run.sh $1 $tenant $token $workers
 }
 
